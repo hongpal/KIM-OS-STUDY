@@ -42,7 +42,7 @@ ASSEMBLEYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
 	$(GCC32) -c $<
 	
 %.o: ../$(SOURCEDIRECTORY)/%.asm
-	$(NASM32) -o $@ $<
+	$(NASM32) -f win -o $@ $<
 	
 InternalDependency:
 	$(GCC32) -MM $(CSOURCEFILES) > Dependency.dep
