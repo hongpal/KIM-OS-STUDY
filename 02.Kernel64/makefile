@@ -1,4 +1,4 @@
-NASM64 = nasm -f win64
+NASM64 = nasm -f elf64
 GCC64 = gcc  -c -m64 -ffreestanding
 LD64 = ld -mi386pep -T ../02Kernel.ld -nostdlib -e Main -Ttext 0x20000
 OBJCOPY64 = objcopy -j .text -j .data -j .rdata -j .bss -S -O binary
@@ -32,7 +32,7 @@ ENTRYPOINTOBJECTFILE = EntryPoint.o
 CSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.c)
 ASSEMBLYSOURCEFILES = $(wildcard ../$(SOURCEDIRECTORY)/*.asm)
 COBJECTFILES = $(notdir $(patsubst %.c,%.o,$(CSOURCEFILES)))
-ASSEMBLYOBJECTFILES = $(notdir $(patsubst %.asm,%o,$(ASSEMBLYSOURCEFILES)))
+ASSEMBLYOBJECTFILES = $(notdir $(patsubst %.asm,%.o,$(ASSEMBLYSOURCEFILES)))
 	
 $(ENTRYPOINTOBJECTFILE): $(ENTRYPOINTSOURCEFILE)
 	$(NASM64) -o $@ $<		
@@ -46,7 +46,7 @@ $(ENTRYPOINTOBJECTFILE): $(ENTRYPOINTSOURCEFILE)
 InternalDependency:
 	$(GCC64) -MM $(CSOURCEFILES) > Dependency.dep
 
-Kernel64.exe: $(ENTRYPOINTOBJECTFILE) $(COBJECTFILES) $(ASSEMBLEYOBJECTFILES)
+Kernel64.exe: $(ENTRYPOINTOBJECTFILE) $(COBJECTFILES) $(ASSEMBLYOBJECTFILES)
 	$(LD64) -o $@ $^
 		
 ifeq (Dependency.dep, $(wildcard Dependency.dep))
