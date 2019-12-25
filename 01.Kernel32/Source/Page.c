@@ -36,7 +36,7 @@ void kInitializePageTables()
 	dwMappingAddress = 0;
 	for(i = 0; i < PAGE_MAXENTRYCOUNT; i++)
 	{
-		kSetPageEntryData(&(pstPDEntry[0]), (i * (PAGE_DEFAULTSIZE >> 20)) >> 12, dwMappingAddress, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS, 0);
+		kSetPageEntryData(&(pstPDEntry[i]), (i * (PAGE_DEFAULTSIZE >> 20)) >> 12, dwMappingAddress, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS, 0);
 		dwMappingAddress += PAGE_DEFAULTSIZE;
 	}
 }

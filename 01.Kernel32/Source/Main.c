@@ -12,6 +12,7 @@
 void kPrintString(int x, int y, const char * pcString);
 BOOL KInitializeKernel64Area(void);
 BOOL kIsMemoryEnough(void);
+void kCopyKernel64ImageTo2Mbyte(void);
 
 #define print kPrintString
 
@@ -21,7 +22,7 @@ void Main()
 	DWORD dwEAX, dwEBX, dwECX, dwEDX;
 	char vcVendorString[13] = { 0, };
 
-	kPrintString(0, 3, "C Language Kernel Started~!!");
+	kPrintString(0, 3, "Protected Mode C Language Kernel Start......[PASS]");
 
 	kPrintString(0, 4, "Minimum Memory Size Check...................[    ]");
 
@@ -74,8 +75,12 @@ void Main()
 		while(1);
 	}
 
-	print(0, 9, "Switch To IA-32e Mode");
+	print(0, 9, "Copy IA-32e Kernel To 2M Address............[    ]");
+	kCopyKernel64ImageTo2Mbyte();
+	print(45, 9, "Pass");
 
+	print(0, 10, "Switch To IA-32e Mode");
+	kSwitchAndExecute64bitKernel();
 
 	while(1);
 }
@@ -133,4 +138,24 @@ BOOL kIsMemoryEnough()
 	}
 
 	return TRUE;
+}
+
+void kCopyKernel64ImageTo2Mbyte()
+{
+	WORD wKernel32SectorCount, wTotalKernelSectorCount;
+	DWORD* pdwSourceAddress, *pdwDestinationAddress;
+	int i;
+
+	wTotalKernelSectorCount = *((WORD*)0x7C05);
+	wKernel32SectorCount = *((WORD*)0x7C07);
+
+	pdwSourceAddress = (DWORD*)(0x10000 + (wKernel32SectorCount * 512));
+	pdwDestinationAddress = (DWORD*)0x200000;
+
+	for(i = 0; i < 512 *(wTotalKernelSectorCount - wKernel32SectorCount) / 4; i++)
+	{
+		*pdwDestinationAddress = *pdwSourceAddress;
+		pdwDestinationAddress++;
+		pdwSourceAddress++;
+	}
 }
